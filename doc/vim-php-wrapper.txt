@@ -1,0 +1,547 @@
+*vim-php-wrapper.txt* *vphpw*  A Vim plug-in to speed up PHP development.
+
+
+                      ___        ___            ~
+               ___   / _ \/\  /\/ _ \__      __ ~
+              / __| / /_)/ /_/ / /_)/\ \ /\ / / ~
+              \__ \/ ___/ __  / ___/  \ V  V /  ~
+              |___/\/   \/ /_/\/       \_/\_/   ~
+
+
+==============================================================================
+CONTENTS                                                            *contents*
+
+  1. Introduction.............................................. |introduction|
+  2. Features...................................................... |features|
+  3. Installation.............................................  |installation|
+  4. Usage............................................................ |usage|
+    4.1. Default Key Mapping................................ |default-mapping|
+    4.2. Command Execution................................ |command-execution|
+  5. Functions.................................................... |functions|
+    5.1. PHP.................................................. |functions-php|
+      VphpwCheckSyntax..................................... |VphpwCheckSyntax|
+      VphpwImportClass..................................... |VphpwImportClass|
+      VphpwRunLastCommand............................... |VphpwRunLastCommand|
+      VphpwRunLastCommandCurrentBuffer..... |VphpwRunLastCommandCurrentBuffer|
+      VphpwRunPhp............................................... |VphpwRunPhp|
+      VphpwSortImports..................................... |VphpwSortImports|
+    5.2. Test................................................ |functions-test|
+      VphpwTestAll............................................. |VphpwTestAll|
+      VphpwTestClosestTestCase..................... |VphpwTestClosestTestCase|
+      VphpwTestWithOptions............................. |VphpwTestWithOptions|
+    5.3. Docblock........................................ |functions-docblock|
+      VphpwAlignDocblock................................. |VphpwAlignDocblock|
+      VphpwDeleteEnclosingDocblock............. |VphpwDeleteEnclosingDocblock|
+      VphpwDocClosestMethod........................... |VphpwDocClosestMethod|
+      VphpwResetDocblock................................. |VphpwResetDocblock|
+    5.4. Misc................................................ |functions-misc|
+      VphpwClearMatches................................... |VphpwClearMatches|
+      VphpwMapKeys............................................. |VphpwMapKeys|
+  6. Configuration............................................ |configuration|
+      vphpw_debug............................................... |vphpw_debug|
+      vphpw_doc_gen_lineup............................. |vphpw_doc_gen_lineup|
+      vphpw_doc_type_placeholder................. |vphpw_doc_type_placeholder|
+      vphpw_php_cmd........................................... |vphpw_php_cmd|
+      vphpw_php_opts......................................... |vphpw_php_opts|
+      vphpw_test_cmd......................................... |vphpw_test_cmd|
+      vphpw_test_framework............................. |vphpw_test_framework|
+      vphpw_test_opts....................................... |vphpw_test_opts|
+      vphpw_use_default_mapping................... |vphpw_use_default_mapping|
+      vphpw_use_dispatch................................. |vphpw_use_dispatch|
+  7. API................................................................ |API|
+    7.1. vphpw#class#.......................................... |vphpw#class#|
+      GetClassAtCursor..................................... |GetClassAtCursor|
+      GetClosestMethod..................................... |GetClosestMethod|
+      GetClosestTestCase................................. |GetClosestTestCase|
+      GetClosestTestCaseName......................... |GetClosestTestCaseName|
+      GetEnclosingDocblockLineNumbers....... |GetEnclosingDocblockLineNumbers|
+      GetMethodParams....................................... |GetMethodParams|
+      GetMethodReturnType............................... |GetMethodReturnType|
+    7.2. vphpw#cmd#.............................................. |vphpw#cmd#|
+      BuildPhpCommand....................................... |BuildPhpCommand|
+      BuildTestCommand..................................... |BuildTestCommand|
+      Execute....................................................... |Execute|
+      RunCommand................................................. |RunCommand|
+      RunLastCommand......................................... |RunLastCommand|
+      ShellEscapeOpts....................................... |ShellEscapeOpts|
+    7.3. vphpw#docblock#.................................... |vphpw#docblock#|
+      AlignDocblock........................................... |AlignDocblock|
+      GenerateDocblock..................................... |GenerateDocblock|
+      ResetDocblock........................................... |ResetDocblock|
+    7.4. vphpw#namespace#.................................. |vphpw#namespace#|
+      AppendUseStatement................................. |AppendUseStatement|
+      GetNamespaceFromClassFile................... |GetNamespaceFromClassFile|
+      GetNamespaceOfCurrentBuffer............... |GetNamespaceOfCurrentBuffer|
+      IsClassImported....................................... |IsClassImported|
+      SortUses..................................................... |SortUses|
+    7.5. vphpw#opt#.............................................. |vphpw#opt#|
+      ClearBufferRunOptions........................... |ClearBufferRunOptions|
+      ClearTestOptions..................................... |ClearTestOptions|
+      ShowRunOptions......................................... |ShowRunOptions|
+      ShowTestOptions....................................... |ShowTestOptions|
+    7.6. vphpw#util#............................................ |vphpw#util#|
+      Error........................................................... |Error|
+      GetOpt......................................................... |GetOpt|
+      GroupDictsByKeys..................................... |GroupDictsByKeys|
+      MaxStrLen................................................... |MaxStrLen|
+      ReplaceWordAtCursor............................... |ReplaceWordAtCursor|
+      StrTrim....................................................... |StrTrim|
+      StrTrimL..................................................... |StrTrimL|
+      StrTrimR..................................................... |StrTrimR|
+  8. License........................................................ |license|
+
+==============================================================================
+                                                                *introduction*
+1. INTRODUCTION~
+
+Vim PHP Wrapper (`vphpw`) is a Vim plug-in to help improve PHP development
+productivity. It provides functions for common tasks such as importing
+classes, running, testing, or documenting PHP code as well as simple APIs for
+custom tasks.
+
+For unit testing, `vphpw` supports `PHPUnit` out of the box. `Codeception` is
+also supported to a certain extent.
+
+This plug-in can also be used with `vim-dispatch` for a better, non-disruptive
+development experience.
+
+Requirements:
+  * Tested with Vim 7.4 and 8. Might still work with 7.3.
+  * Vim's |tags| for class import functions.
+
+==============================================================================
+                                                                    *features*
+2. FEATURES~
+
+For PHP development,
+
+  * Writing code:
+    + Check for syntax (not in real-time).
+    + Import classes.
+    + Run the current PHP buffer with default or manually specified options.
+    + Test with default or manually specified options.
+    + Run a test class or specific test case.
+    + Execute the last command on the last or current target.
+
+  * Documentation:
+    + Generate docblock.
+    + Align docblock.
+    + Reset/Delete docblock.
+
+A glance at the |default-mapping| will give you an idea of what common tasks
+`vphpw` provides.
+
+This plug-in also exposes useful, well-documented APIs to write custom
+functions for specific tasks. These can be grouped as follows.
+
+  + Class: Deal with PHP class buffer.
+  + Command: Build and execute commands.
+  + Docblock: Manipulate docblocks.
+  + Namespace: Work with namespaces.
+
+==============================================================================
+                                                                *installation*
+3. INSTALLATION~
+
+Using pathogen.vim
+>
+  cd ~/.vim/bundle
+  git clone https://github.com/diepm/vim-php-wrapper.git
+<
+Using Vundle
+>
+  Plugin 'diepm/vim-php-wrapper'
+<
+Other methods should work as as well.
+
+==============================================================================
+                                                                       *usage*
+4. USAGE~
+
+For a quick walk-through of PHP development with `vphpw` and some examples of
+custom tasks, check out
+
+https://github.com/diepm/vphpw-demos
+
+------------------------------------------------------------------------------
+                                                             *default-mapping*
+4.1. Default Key Mapping
+
+The default key mapping is disabled by default. To enable,
+>
+  let g:vphpw_use_default_mapping = 1
+<
+or for the buffer scope,
+>
+  let b:vphpw_use_default_mapping = 1
+<
+The default mapping is as follows.
+>
+  nnoremap <buffer> <silent> <Leader>rr :call VphpwRunPhp()<CR>
+  nnoremap <buffer> <silent> <Leader>rl :call VphpwRunLastCommand()<CR>
+
+  nnoremap <buffer> <silent> <Leader>rb :call
+    \ VphpwRunLastCommandCurrentBuffer()<CR>
+
+  nnoremap <buffer> <silent> <Leader>ta :call VphpwTestAll()<CR>
+  nnoremap <buffer> <silent> <Leader>tk :call VphpwTestClosestTestCase(0)<CR>
+  nnoremap <buffer> <silent> <Leader>tj :call VphpwTestClosestTestCase(1)<CR>
+  nnoremap <buffer> <silent> <Leader>to :call VphpwTestWithOptions()<CR>
+  nnoremap <buffer> <silent> <Leader>dk :call VphpwDocClosestMethod(0)<CR>
+  nnoremap <buffer> <silent> <Leader>dj :call VphpwDocClosestMethod(1)<CR>
+  noremap  <buffer> <silent> <Leader>dl :call VphpwAlignDocblock()<CR>
+
+  nnoremap <buffer> <silent> <Leader>dd :call
+    \ VphpwDeleteEnclosingDocblock()<CR>
+
+  noremap  <buffer> <silent> <Leader>dr :call VphpwResetDocblock()<CR>
+  nnoremap <buffer> <silent> <Leader>cc :call VphpwCheckSyntax()<CR>
+  nnoremap <buffer> <silent> <Leader>cm :call VphpwClearMatches()<CR>
+  nnoremap <buffer> <silent> <Leader>is :call VphpwSortImports()<CR>
+
+  nnoremap <buffer> <silent> <Leader>ic :call
+    \ VphpwImportClass({'inline': 0})<CR>
+
+  nnoremap <buffer> <silent> <Leader>ia :call
+    \ VphpwImportClass({'inline': 0, 'importAs': 1})<CR>
+
+  nnoremap <buffer> <silent> <Leader>ii :call
+    \ VphpwImportClass({'inline': 1, 'modeAfter': 'n', 'prefixSlash': 1})<CR>
+
+  nnoremap <buffer> <silent> <Leader>id :call
+    \ VphpwImportClass({'inline': 1, 'modeAfter': 'n', 'prefixSlash': 0})<CR>
+
+  inoremap <buffer> <silent> <C-@>ic <Esc>:call
+    \ VphpwImportClass({'inline': 0, 'modeAfter': 'i'})<CR>
+
+  inoremap <buffer> <silent> <C-@>ia <Esc>:call
+    \ VphpwImportClass({'inline': 0, 'importAs': 1, 'modeAfter': 'i'})<CR>
+
+  inoremap <buffer> <silent> <C-@>ii <Esc>:call
+    \ VphpwImportClass({'inline': 1, 'modeAfter': 'i', 'prefixSlash': 1})<CR>
+
+  inoremap <buffer> <silent> <C-@>id <Esc>:call
+    \ VphpwImportClass({'inline': 1, 'modeAfter': 'i', 'prefixSlash': 0})<CR>
+
+  inoremap <buffer> <silent> <C-Space>ic <Esc>:call
+    \ VphpwImportClass({'inline': 0, 'modeAfter': 'i'})<CR>
+
+  inoremap <buffer> <silent> <C-Space>ia <Esc>:call
+    \ VphpwImportClass({'inline': 0, 'importAs': 1, 'modeAfter': 'i'})<CR>
+
+  inoremap <buffer> <silent> <C-Space>ii <Esc>:call
+    \ VphpwImportClass({'inline': 1, 'modeAfter': 'i', 'prefixSlash': 1})<CR>
+
+  inoremap <buffer> <silent> <C-Space>id <Esc>:call
+    \ VphpwImportClass({'inline': 1, 'modeAfter': 'i', 'prefixSlash': 0})<CR>
+<
+Regarding the "closest" functions, if the method is on the same line with
+the cursor, it's considered below or after the cursor.
+
+------------------------------------------------------------------------------
+                                                           *command-execution*
+4.2. Command Execution
+
+By default, `vphpw` executes a command using Vim's |!|. This causes the
+current session to wait for the shell process to finish. If your Vim has
+`vim-dispatch` installed, you can configure `vphpw` to use that plug-in by
+>
+  let g:vphpw_use_dispatch = 1
+<
+==============================================================================
+                                                                   *functions*
+5. FUNCTIONS~
+
+The common functions can be categorized to three groups, PHP, test, and
+Docblock.
+
+------------------------------------------------------------------------------
+                                                               *functions-php*
+5.1. PHP
+
+The default command to execute a file is `php`. It can be changed by setting
+the option |vphpw_php_cmd|.
+
+*VphpwCheckSyntax*
+  Syntax-check the current file.
+
+*VphpwImportClass*
+  Import class by appending `use` statements or inline replacement.
+
+*VphpwRunLastCommand*
+  Execute the last command on the last target.
+
+*VphpwRunLastCommandCurrentBuffer*
+  Execute the last command on the current buffer.
+
+*VphpwRunPhp*
+  Execute the current file.
+
+*VphpwSortImports*
+  Sort the `use` statements.
+
+------------------------------------------------------------------------------
+                                                              *functions-test*
+5.2. Test
+
+The default test command to run a test file is `phpunit`. It can be changed
+by setting the option |vphpw_test_cmd|.
+
+*VphpwTestAll*
+  Run the current test file (all test cases).
+
+*VphpwTestClosestTestCase* (afterCursor flag)
+  Test a test case before/after the cursor. The executed test case will be
+  highlighted. Executing the test case before the cursor is helpful when we
+  are writing or updating that test case since the cursor is now within the
+  method body; the method declaration line is before the cursor.
+
+*VphpwTestWithOptions*
+  Test with manually specified options. It will prompt for input. The
+  parameters are specified as in shell. Values are not shell escaped.
+  For example,
+>
+  --bootstrap /to/file -c ~/to/conf.ini -d ENV='dev1' --stop-on-failure
+<
+------------------------------------------------------------------------------
+                                                          *functions-docblock*
+5.3. Docblock
+
+*VphpwAlignDocblock*
+  Align the docblock enclosing the cursor or just the selected lines.
+
+*VphpwDeleteEnclosingDocblock*
+  Delete the docblock enclosing the cursor.
+
+*VphpwDocClosestMethod* (afterCursor flag)
+  Generate the docblock for the method before/after the cursor.
+
+*VphpwResetDocblock*
+  Reset the docblock enclosing the cursor or just the selected lines.
+
+------------------------------------------------------------------------------
+                                                              *functions-misc*
+5.4. Misc
+
+*VphpwClearMatches*
+  Clear the highlighted matches.
+
+*VphpwMapKeys*
+  Perform the default key mapping.
+
+==============================================================================
+                                                               *configuration*
+6. CONFIGURATION~
+
+Configuration options may have a global or buffer scope (the latter has a
+higher priority). Each variable can be set in `.vimrc` for the global scope
+by
+>
+  let g:option_name = value
+<
+or in command mode for the buffer scope by
+>
+  let b:option_name = value
+<
+*vphpw_debug*
+  Enable the debug mode. Default: 0.
+
+*vphpw_doc_gen_lineup*
+  Specify if `vphpw` should also align the docblock after generating it for a
+  method. Default: 1.
+
+*vphpw_doc_type_placeholder*
+  Specify the placholder for the unknown type of a method's parameter.
+  Default: '...' (quotes included).
+
+*vphpw_php_cmd*
+  Specify the PHP command. Default: `php`.
+>
+  let g:vphpw_php_cmd = '/opt/usr/local/bin/php'
+  or
+  let b:vphpw_php_cmd = '/usr/bin/php5'
+<
+*vphpw_php_opts*
+  Specify the default execution options.
+>
+  let g:vphpw_php_opts = ['-c', '/path/to/php.ini']
+  or
+  let b:vphpw_php_opts = ['-c', '/path/to/php5.ini']
+<
+*vphpw_test_cmd*
+  Specify the test command. If the option |vphpw_test_framework| is not set or
+  set to `phpunit`, the default command is `phpunit`. If the test framework is
+  set to `codeception`, the command defaults to `codecept run`.
+>
+  let g:vphpw_php_cmd = './vendor/bin/phpunit'
+  or
+  let b:vphpw_php_cmd = './vendor/bin/codecept run'
+<
+*vphpw_test_framework*
+  Specify the test framework, either `phpunit` or `codeception`.
+  Default: `phpunit`.
+
+*vphpw_test_opts*
+  Specify the default testing arguments.
+>
+  let g:vphpw_php_opts = ['-c', '/path/to/php.ini', '--stderr']
+  or
+  let b:vphpw_php_opts = ['--steps', '-o', 'settings: lint: false']
+<
+*vphpw_use_default_mapping*
+  Specify if the default key mapping should be enabled. Default: 0.
+  See |default-mapping|.
+
+*vphpw_use_dispatch*
+  Specify if the execution process should be handled by `tpope/vim-dispatch`.
+  This is useful for executing a command that produces lengthy output.
+  Default: 0.
+
+==============================================================================
+                                                                         *API*
+7. API~
+
+This plug-in provides some APIs to write custom functions for specific tasks.
+These APIs are grouped as follows (check out the source code documentation
+for more details).
+
+------------------------------------------------------------------------------
+                                                                *vphpw#class#*
+7.1. vphpw#class#~
+
+For the "closest" functions, they're based on the cursor position and the
+given search direction (before or after the cursor).
+
+*GetClassAtCursor*
+  Get the class name under the cursor.
+
+*GetClosestMethod*
+  Search for the closest method to the cursor.
+
+*GetClosestTestCase*
+  Search for the closest test case to the cursor.
+
+*GetClosestTestCaseName*
+  Search for the closest test case name to the cursor.
+
+*GetEnclosingDocblockLineNumbers*
+  Search for the starting and ending line number of the docblock enclosing
+  the cursor.
+
+*GetMethodParams*
+  Parse the given method declaration for parameters information.
+
+*GetMethodReturnType*
+  Parse the given method declaration for the return type.
+
+------------------------------------------------------------------------------
+                                                                 *vphpw#cmd#*
+7.2. vphpw#cmd#~
+
+*BuildPhpCommand*
+  Build a PHP command based on the given parameters.
+
+*BuildTestCommand*
+  Build a test command based on the given parameters.
+
+*Execute*
+  Execute a command using the given builder function.
+
+*RunCommand*
+  Run a command in string.
+
+*RunLastCommand*
+  Run the last command, if any.
+
+*ShellEscapeOpts*
+  Shell-escape the given list of options.
+
+------------------------------------------------------------------------------
+                                                             *vphpw#docblock#*
+7.3. vphpw#docblock#~
+
+Note: These functions modify the current buffer.
+
+*AlignDocblock*
+  Align docblock of a method.
+
+*GenerateDocblock*
+  Generate a docblock given the method information.
+
+*ResetDocblock*
+  Reset (Undo line up) docblock of a method.
+
+------------------------------------------------------------------------------
+                                                            *vphpw#namespace#*
+7.4. vphp#namespace#~
+
+Note: Some of these functions modify the current buffer.
+
+*AppendUseStatement*
+  Append a `use` statement. Requires |tags| setup.
+
+*GetNamespaceFromClassFile*
+  Extract the namespace of the given class name from the class file provided
+  in tags file. Requires |tags| setup.
+
+*GetNamespaceOfCurrentBuffer*
+  Get the namespace of the current buffer.
+
+*IsClassImported*
+  Check if a class is already imported.
+
+*SortUses*
+  Sort the `use` statements.
+
+------------------------------------------------------------------------------
+                                                                  *vphpw#opt#*
+7.5. vphpw#opt#~
+
+*ClearBufferRunOptions*
+  Clear the default buffer run options.
+
+*ClearTestOptions*
+  Clear the default buffer test options.
+
+*ShowRunOptions*
+  Show the current default run options.
+
+*ShowTestOptions*
+  Show the current default test options.
+
+------------------------------------------------------------------------------
+                                                                 *vphpw#util#*
+7.6. vphpw#util#~
+
+*Error*
+  Report an error
+
+*GetOpt*
+  Get a `vphpw` option value.
+
+*GroupDictsByKeys*
+  Group the given dictionary by a list of keys.
+
+*MaxStrLen*
+  Get the max length of the given list of strings.
+
+*ReplaceWordAtCursor*
+  Replace the word under the cursor with the given text.
+
+*StrTrim*
+  Trim a string.
+
+*StrTrimL*
+  Trim a string from the left.
+
+*StrTrimR*
+  Trim a string from the right.
+
+==============================================================================
+                                                                     *license*
+8. License~
+
+MIT
+
+
+ vim:tw=78:ts=2:isk+=-,!,#:ft=help:norl:
