@@ -78,13 +78,14 @@ endfunc
 func! vphpw#namespace#GetNamespaceFromClassFile(className) abort
   " Keep the current win number to go back.
   let bufNum = bufnr('%')
+  let maxNum = bufnr('$')
   let curView = winsaveview()
 
   " Try to open the class file from tag in preview window. Also
   " disable filetype detection for PHP plugins not activated.
   filetype off
   try
-    exec 'hide tjump' a:className
+    exec 'tjump' a:className
   catch /.*/
     echoerr v:exception
   finally
@@ -99,8 +100,13 @@ func! vphpw#namespace#GetNamespaceFromClassFile(className) abort
   let ns = vphpw#namespace#GetNamespaceOfCurrentBuffer()
 
   " Go back and clean up.
-  exec 'hide buffer #'
-  exec 'bwipe! #'
+  let tmpBufNum = bufnr('%')
+  exec 'buffer #'
+
+  " If the temp buffer > the previous max one, it's new; can wipe out.
+  if tmpBufNum > maxNum
+    exec 'bwipe! #'
+  endif
   call winrestview(curView)
   return ns
 endfunc
