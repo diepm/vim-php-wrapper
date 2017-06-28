@@ -9,35 +9,35 @@
 
 
 ==============================================================================
-CONTENTS                                                            *contents*
+CONTENTS                                                      *vphpw-contents*
 
-  1. Introduction.............................................. |introduction|
-  2. Features...................................................... |features|
-  3. Installation.............................................  |installation|
-  4. Usage............................................................ |usage|
-    4.1. Default Key Mapping................................ |default-mapping|
-    4.2. Command Execution................................ |command-execution|
-  5. Functions.................................................... |functions|
-    5.1. PHP.................................................. |functions-php|
+  1. Introduction........................................ |vphpw-introduction|
+  2. Features................................................ |vphpw-features|
+  3. Installation.......................................  |vphpw-installation|
+  4. Usage...................................................... |vphpw-usage|
+    4.1. Default Key Mapping.......................... |vphpw-default-mapping|
+    4.2. Command Execution.......................... |vphpw-command-execution|
+  5. Functions.............................................. |vphpw-functions|
+    5.1. PHP............................................ |vphpw-functions-php|
       VphpwCheckSyntax..................................... |VphpwCheckSyntax|
       VphpwImportClass..................................... |VphpwImportClass|
       VphpwRunLastCommand............................... |VphpwRunLastCommand|
       VphpwRunLastCommandCurrentBuffer..... |VphpwRunLastCommandCurrentBuffer|
       VphpwRunPhp............................................... |VphpwRunPhp|
       VphpwSortImports..................................... |VphpwSortImports|
-    5.2. Test................................................ |functions-test|
+    5.2. Test.......................................... |vphpw-functions-test|
       VphpwTestAll............................................. |VphpwTestAll|
       VphpwTestClosestTestCase..................... |VphpwTestClosestTestCase|
       VphpwTestWithOptions............................. |VphpwTestWithOptions|
-    5.3. Docblock........................................ |functions-docblock|
+    5.3. Docblock.................................. |vphpw-functions-docblock|
       VphpwAlignDocblock................................. |VphpwAlignDocblock|
       VphpwDeleteEnclosingDocblock............. |VphpwDeleteEnclosingDocblock|
       VphpwDocClosestMethod........................... |VphpwDocClosestMethod|
       VphpwResetDocblock................................. |VphpwResetDocblock|
-    5.4. Misc................................................ |functions-misc|
+    5.4. Misc.......................................... |vphpw-functions-misc|
       VphpwClearMatches................................... |VphpwClearMatches|
       VphpwMapKeys............................................. |VphpwMapKeys|
-  6. Configuration............................................ |configuration|
+  6. Configuration...................................... |vphpw-configuration|
       vphpw_debug............................................... |vphpw_debug|
       vphpw_doc_gen_lineup............................. |vphpw_doc_gen_lineup|
       vphpw_doc_type_placeholder................. |vphpw_doc_type_placeholder|
@@ -48,7 +48,7 @@ CONTENTS                                                            *contents*
       vphpw_test_opts....................................... |vphpw_test_opts|
       vphpw_use_default_mapping................... |vphpw_use_default_mapping|
       vphpw_use_dispatch................................. |vphpw_use_dispatch|
-  7. API................................................................ |API|
+  7. API.......................................................... |vphpw-api|
     7.1. vphpw#class#.......................................... |vphpw#class#|
       GetClassAtCursor..................................... |GetClassAtCursor|
       GetClosestMethod..................................... |GetClosestMethod|
@@ -88,10 +88,10 @@ CONTENTS                                                            *contents*
       StrTrim....................................................... |StrTrim|
       StrTrimL..................................................... |StrTrimL|
       StrTrimR..................................................... |StrTrimR|
-  8. License........................................................ |license|
+  8. License.................................................. |vphpw-license|
 
 ==============================================================================
-                                                                *introduction*
+                                                          *vphpw-introduction*
 1. INTRODUCTION~
 
 Vim PHP Wrapper (`vphpw`) is a Vim plug-in to help improve PHP development
@@ -110,7 +110,7 @@ Requirements:
   * Vim's |tags| for class import functions.
 
 ==============================================================================
-                                                                    *features*
+                                                              *vphpw-features*
 2. FEATURES~
 
 For PHP development,
@@ -128,8 +128,8 @@ For PHP development,
     + Align docblock.
     + Reset/Delete docblock.
 
-A glance at the |default-mapping| will give you an idea of what common tasks
-`vphpw` provides.
+A glance at the |vphpw-default-mapping| will give you an idea of what common
+tasks `vphpw` provides.
 
 This plug-in also exposes useful, well-documented APIs to write custom
 functions for specific tasks. These can be grouped as follows.
@@ -140,7 +140,7 @@ functions for specific tasks. These can be grouped as follows.
   + Namespace: Work with namespaces.
 
 ==============================================================================
-                                                                *installation*
+                                                          *vphpw-installation*
 3. INSTALLATION~
 
 Using pathogen.vim
@@ -155,7 +155,7 @@ Using Vundle
 Other methods should work as as well.
 
 ==============================================================================
-                                                                       *usage*
+                                                                 *vphpw-usage*
 4. USAGE~
 
 For a quick walk-through of PHP development with `vphpw` and some examples of
@@ -164,7 +164,7 @@ custom tasks, check out
 https://github.com/diepm/vphpw-demos
 
 ------------------------------------------------------------------------------
-                                                             *default-mapping*
+                                                       *vphpw-default-mapping*
 4.1. Default Key Mapping
 
 The default key mapping is disabled by default. To enable,
@@ -239,7 +239,7 @@ Regarding the "closest" functions, if the method is on the same line with
 the cursor, it's considered below or after the cursor.
 
 ------------------------------------------------------------------------------
-                                                           *command-execution*
+                                                     *vphpw-command-execution*
 4.2. Command Execution
 
 By default, `vphpw` executes a command using Vim's |!|. This causes the
@@ -249,14 +249,14 @@ current session to wait for the shell process to finish. If your Vim has
   let g:vphpw_use_dispatch = 1
 <
 ==============================================================================
-                                                                   *functions*
+                                                             *vphpw-functions*
 5. FUNCTIONS~
 
 The common functions can be categorized to three groups, PHP, test, and
 Docblock.
 
 ------------------------------------------------------------------------------
-                                                               *functions-php*
+                                                         *vphpw-functions-php*
 5.1. PHP
 
 The default command to execute a file is `php`. It can be changed by setting
@@ -281,7 +281,7 @@ the option |vphpw_php_cmd|.
   Sort the `use` statements.
 
 ------------------------------------------------------------------------------
-                                                              *functions-test*
+                                                        *vphpw-functions-test*
 5.2. Test
 
 The default test command to run a test file is `phpunit`. It can be changed
@@ -304,7 +304,7 @@ by setting the option |vphpw_test_cmd|.
   --bootstrap /to/file -c ~/to/conf.ini -d ENV='dev1' --stop-on-failure
 <
 ------------------------------------------------------------------------------
-                                                          *functions-docblock*
+                                                    *vphpw-functions-docblock*
 5.3. Docblock
 
 *VphpwAlignDocblock*
@@ -320,7 +320,7 @@ by setting the option |vphpw_test_cmd|.
   Reset the docblock enclosing the cursor or just the selected lines.
 
 ------------------------------------------------------------------------------
-                                                              *functions-misc*
+                                                        *vphpw-functions-misc*
 5.4. Misc
 
 *VphpwClearMatches*
@@ -330,7 +330,7 @@ by setting the option |vphpw_test_cmd|.
   Perform the default key mapping.
 
 ==============================================================================
-                                                               *configuration*
+                                                         *vphpw-configuration*
 6. CONFIGURATION~
 
 Configuration options may have a global or buffer scope (the latter has a
@@ -390,7 +390,7 @@ or in command mode for the buffer scope by
 <
 *vphpw_use_default_mapping*
   Specify if the default key mapping should be enabled. Default: 0.
-  See |default-mapping|.
+  See |vphpw-default-mapping|.
 
 *vphpw_use_dispatch*
   Specify if the execution process should be handled by `tpope/vim-dispatch`.
@@ -398,7 +398,7 @@ or in command mode for the buffer scope by
   Default: 0.
 
 ==============================================================================
-                                                                         *API*
+                                                                   *vphpw-api*
 7. API~
 
 This plug-in provides some APIs to write custom functions for specific tasks.
@@ -538,7 +538,7 @@ Note: Some of these functions modify the current buffer.
   Trim a string from the right.
 
 ==============================================================================
-                                                                     *license*
+                                                               *vphpw-license*
 8. License~
 
 MIT
