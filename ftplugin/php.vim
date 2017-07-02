@@ -57,7 +57,7 @@ func! VphpwImportClass(config)
 
   let alias = class
   if get(a:config, 'importAs', 0)
-    let alias = input('Import `' . class . '` as: ')
+    let alias = input('Import `' . class . '` as: ', class)
     if empty(alias)
       echo 'Import canceled.'
       return
