@@ -114,9 +114,10 @@ endfunc
 """
 " Sort continuous `use` lines.
 "
+" @param  boolean a:ignoreCase
 " @return boolean 0 if no sort is done.
 "
-func! vphpw#namespace#SortUses()
+func! vphpw#namespace#SortUses(ignoreCase)
   let curView = winsaveview()
   normal! gg
   let pat = '\v\c^use\s+\\?[a-z0-9_\\]+(\s+as.+)?\s*;'
@@ -135,7 +136,7 @@ func! vphpw#namespace#SortUses()
     call winrestview(curView)
     return 0
   endif
-  exec firstLineNum . ',' . lastLineNum . 'sort'
+  exec firstLineNum . ',' . lastLineNum . 'sort' . (a:ignoreCase ? ' i' : '')
   call winrestview(curView)
   return 1
 endfunc

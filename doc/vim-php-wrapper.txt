@@ -43,6 +43,7 @@ CONTENTS                                                      *vphpw-contents*
       vphpw_doc_type_placeholder................. |vphpw_doc_type_placeholder|
       vphpw_php_cmd........................................... |vphpw_php_cmd|
       vphpw_php_opts......................................... |vphpw_php_opts|
+      vphpw_sort_import_ignore_case........... |vphpw_sort_import_ignore_case|
       vphpw_test_cmd......................................... |vphpw_test_cmd|
       vphpw_test_framework............................. |vphpw_test_framework|
       vphpw_test_opts....................................... |vphpw_test_opts|
@@ -368,6 +369,9 @@ or in command mode for the buffer scope by
   or
   let b:vphpw_php_opts = ['-c', '/path/to/php5.ini']
 <
+*vphpw_sort_import_ignore_case*
+  Sort `use` statements ignoring case. Enabled by default.
+
 *vphpw_test_cmd*
   Specify the test command. If the option |vphpw_test_framework| is not set or
   set to `phpunit`, the default command is `phpunit`. If the test framework is

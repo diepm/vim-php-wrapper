@@ -111,7 +111,7 @@ func! VphpwImportClass(config)
 
   " Sort for statement appending.
   if !inline && get(a:config, 'sort', 1)
-    call vphpw#namespace#SortUses()
+    call vphpw#namespace#SortUses(vphpw#util#GetOpt('vphpw_sort_import_ignore_case', 1))
   endif
 
   " Change the class at the cursor to the alias if any.
@@ -129,7 +129,7 @@ endfunc
 " Sort the continues imports.
 "
 func! VphpwSortImports()
-  if vphpw#namespace#SortUses()
+  if vphpw#namespace#SortUses(vphpw#util#GetOpt('vphpw_sort_import_ignore_case', 1))
     echo '`use` statements sorted.'
   else
     echo 'No sorting performed.'
