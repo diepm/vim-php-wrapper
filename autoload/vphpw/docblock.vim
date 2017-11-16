@@ -46,7 +46,9 @@ func! vphpw#docblock#GenerateDocblock(methodInfo, config)
 
   " Add @return tag if there is returnType.
   if !empty(returnType)
-    let txtOut = ' * @return ' . returnType
+    let txtOut = ' * @return ' . (strpart(returnType, 0, 1) == '?'
+                                  \ ? strpart(returnType, 1) . '|null'
+                                  \ : returnType)
     call append(lnStart + offset, indent . txtOut)
     let offset += 1
   endif

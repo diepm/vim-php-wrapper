@@ -152,7 +152,7 @@ endfunc
 "
 func! vphpw#class#GetMethodReturnType(methodDecl)
   " Method decl: public function someName(...) : Ns\SomeType
-  let pat = '\v\c\)\s*\:\s*([a-z0-9_\\]*)'
+  let pat = '\v\c\)\s*\:\s*(\??[a-z0-9_\\]*)'
   return get(matchlist(a:methodDecl, pat, 0, 1), 1, '')
 endfunc
 
