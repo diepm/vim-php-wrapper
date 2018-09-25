@@ -134,12 +134,17 @@ func! vphpw#class#GetMethodParams(methodDecl)
   let lstParams = split(strParams, ',')
   let retList   = []
   for param in lstParams
-    let [xx, type, var; rest] = matchlist(
+    let [xx, type, var, rest; xxx] = matchlist(
       \ param,
-      \ '\v\s*([^$[:space:]]+\s)?\s*\&?(\$\w+).*$'
+      \ '\v\s*(\??[^$[:space:]]+\s)?\s*\&?(\$\w+)(.*)$'
     \)
     let type = vphpw#util#StrTrim(type)
-    call add(retList, [vphpw#util#StrTrim(var), vphpw#util#StrTrim(type)])
+    if !empty(type) && type[0] == '?'
+      let type = type[1:] . '|null'
+    elseif rest =~? '\v\=\s*null'
+      let type = type . '|null'
+    endif
+    call add(retList, [vphpw#util#StrTrim(var), type])
   endfor
   return retList
 endfunc
